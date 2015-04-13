@@ -8,7 +8,7 @@ file composer.json
 {
 	"require": {
 		"kecik/kecik": "1.0.*@dev",
-		"kecik/database": "1.0.*@dev"
+		"kecik/database": "1.0.*@dev",
 		"kecik/mvc": "1.0.*@dev"
 	}
 }
