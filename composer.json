@@ -1,6 +1,6 @@
 {
     "name": "kecik/mvc",
-    "description": "MVC Class untuk Kecik Framework",
+    "description": "External MVC Libraries for Kecik Framework",
     "keywords": ["kecik", "framework", "mvc"],
     "license": "MIT",
     "authors": [
