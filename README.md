@@ -1,4 +1,4 @@
-**Kecik Database**
+**Kecik MVC**
 ================
 Merupakan pustaka/library yang dibuat khusus Framework Kecik, pustaka/library ini dibuat sebagai MVC external yg akan secara otomatis menggantikan fungsi dari MVC internal yang hanya men-generate perintah SQL, tapi pustaka ini akan menjalankan fungsi Model sebagaimana mestinya.
 
