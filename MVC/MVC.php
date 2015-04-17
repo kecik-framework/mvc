@@ -11,7 +11,7 @@
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.com/kecik-framework/session
  * @license		MIT
- * @version 	1.0.1-alpha
+ * @version 	1.0.2-alpha
  * @package		Kecik\Session
  **/
 namespace Kecik;

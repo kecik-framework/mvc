@@ -128,44 +128,44 @@ $app = new Kecik\Kecik($config);
 
 	//** DIC Container
 	//-- User Controller
-	$app->container['userController'] = function($container) use ($app) {
-		return new Controller\User($app);
+	$app->container['userController'] = function($container) {
+		return new Controller\User($this);
 	};
 	//-- END
 	
 	//** Index
-	$app->get('/', function() use ($app) {
-		$app->container['userController']->index();
+	$app->get('/', function() {
+		return $this->container['userController']->index();
 	})->template('bootstrap_template');
 	
 	//** User List
-	$app->get('user', function() use ($app) {
-		$app->container['userController']->read();
+	$app->get('user', function() {
+		return $this->container['userController']->read();
 	})->template('bootstrap_template');
 
 	//** FORM
 	//-- FORM Add
-	$app->get('add', function() use ($app) {
-		$app->container['userController']->form();
+	$app->get('add', function() {
+		return $this->container['userController']->form();
 	})->template('bootstrap_template');
 	//-- FORM Update
-	$app->get('edit/:username', function($username) use ($app) {
-		$app->container['userController']->form($username);
+	$app->get('edit/:username', function($username) {
+		return $this->container['userController']->form($username);
 	})->template('bootstrap_template');
 	//-- END FORM
 
 	//** Action INSERT, UPDATE, AND DELETE
 	//-- INSERT
-	$app->post('insert', function() use ($app) {
-		$app->container['userController']->insert();
+	$app->post('insert', function() {
+		return $this->container['userController']->insert();
 	});
 	//-- UPDATE
-	$app->post('update/:username', function($username) use ($app) {
-		$app->container['userController']->update($username);
+	$app->post('update/:username', function($username) {
+		return $this->container['userController']->update($username);
 	});
 	//-- DELETE
-	$app->get('delete/:username', function($username) use ($app) {
-		$app->container['userController']->delete($username);
+	$app->get('delete/:username', function($username) {
+		return $this->container['userController']->delete($username);
 	});
 	//-- END Action
 
@@ -212,7 +212,7 @@ Untuk template ketikan code berikut ini, nama file adalah **`templates/bootstrap
 
     <div class="container">
 
-        @controller
+        @response
 
     </div><!-- /.container -->
 		
@@ -239,11 +239,11 @@ class User extends Controller {
 	}
 
 	public function index() {
-		$this->view('index');
+		return $this->view('index');
 	}
 
 	public function read() {
-		$this->view('read');
+		return $this->view('read');
 	}
 
 	public function form($id='') {
@@ -252,7 +252,7 @@ class User extends Controller {
 		else
 			$url = $this->app->url->linkto('update/'.$id);
 
-		$this->view('form', ['id'=>$id, 'url'=>$url]);
+		return $this->view('form', ['id'=>$id, 'url'=>$url]);
 	}
 
 	public function insert() {
