@@ -44,8 +44,16 @@ class Controller {
 	 * @param string $file
 	 * @param array $param
 	 **/
-	protected function view($file, $param=array()) {
+	protected function view($file, $param=[]) {
+		ob_start();
 		extract($param);
-		include Config::get('path.mvc').'/views/'.$file.'.php';
+		$myfile = fopen(Config::get('path.mvc').'/views/'.$file.'.php', "r");
+		$view = fread($myfile,filesize(Config::get('path.mvc').'/views/'.$file.'.php'));
+		fclose($myfile);
+		//$view = file_get_contents( Config::get('path.mvc').'/views/'.$file.'.php' );
+		eval('?>'.$view);
+		$result = ob_get_clean();
+		
+		return $result;
 	}
 }
