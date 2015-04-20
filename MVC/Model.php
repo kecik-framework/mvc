@@ -5,13 +5,13 @@
  ///////////////////////////////////////////////////////////////*/
 
 /**
- * Session - Library untuk framework kecik, library ini khusus untuk membantu masalah session 
+ * MVC Model
  *
  * @author 		Dony Wahyu Isp
  * @copyright 	2015 Dony Wahyu Isp
- * @link 		http://github.com/kecik-framework/session
+ * @link 		http://github.com/kecik-framework/mvc
  * @license		MIT
- * @version 	1.0.1-alpha
+ * @version 	1.0.2
  * @package		Kecik\Model
  **/
 namespace Kecik;
@@ -46,11 +46,6 @@ class Model {
 			else
 				$ret = self::$db->$table->update(self::$_id, self::$_data);
 			
-
-			//silakan tambah code database sendiri disini
-
-
-			//-- Akhir tambah code database sendiri
 			self::$_data = [];
 		}
 
@@ -72,28 +67,102 @@ class Model {
 				self::$_data = [];
 			} else
 				$ret = FALSE;
-
-			//silakan tambah code database sendiri disini
-
-
-			//-- AKhir tambah code database sendiri
 		}
 
 		return $ret;
 	}
 
+	/**
+	 * find
+	 * function for select query
+	 * @param Condition ['select', 'where', 'join']
+	 * @param Limit [limit] or [offset, limit]
+	 * @param Order By ['asc'=>['field1', 'field2'], 'desc'=>['field3']]
+	 * @return array rows
+	 **/
 	public static function find($condition=[], $limit=[], $order_by=[]) {
 		self::$db = MVC::$db;
 
 		$table = static::$table;
+		if (is_array(static::relational()) && count(static::relational()) > 0) {
+			$relational = static::relational();
+			if (!is_array($relational[0])) {
+				$model = '\Model\\'.$relational[0];
+				if (count($relational) == 1)
+					$condition['join'][] = ['natural', $model::$table];
+				elseif (count($relational) == 2)
+					$condition['join'][] = ['left', $model::$table, $relational[1]];
+				elseif (count($relational) == 3)
+					$condition['join'][] = ['left', $model::$table, [$relational[1], $relational[2]]];
+			} else {
+				while(list($id, $relation) = each($relational) ) {
+					$model = '\Model\\'.$relation[0];
+					if (count($relation) == 1)
+						$condition['join'][] = ['natural', $model::$table];
+					elseif (count($relation) == 2)
+						$condition['join'][] = ['left', $model::$table, $relation[1]];
+					elseif (count($relation) == 3)
+						$condition['join'][] = ['left', $model::$table, [$relation[1], $relation[2]]];
+				}
+			}
+		}
+		
 		return self::$db->$table->find($condition, $limit, $order_by);
 	}
 
-	//Silakan tambah fungsi model sendiri disini
+	/**
+	 * relational()
+	 * Overide for relational
+	 * @return array []
+	 **/
+	public static function relational() {
+		return [];
+	}
 
+	/**
+	 * call static findFieldOperator
+	 * findName("'name'") or findNameNot("'name'") or findNameLike("'%name%'") or findNameNotLike("'%name%'") or
+	 * findProgressBetween([80, 100]) or findProgressNotBetween([80, 100])
+	 * @return FALSE or array rows
+	 **/
+	public static function __callStatic($name, $args) {
+		if (substr($name, 0, strlen('find')) == 'find') {
+			$name  = substr($name, strlen('find'));
+			if ($name[0] == strtoupper($name[0])) {
+				$optname = '';
+				if (substr($name, -strlen('like')) == 'Like') {
+					$optname = 'Like';
+					$name = substr($name, 0, -strlen('like'));
+				} elseif (substr($name, -\strlen('between')) == 'Between') {
+					$optname = 'Between';
+					$name = substr($name, 0, -strlen('between'));
+				} else {
+					$optname = '=';
+					$field = $name;
+				}
 
-	//-- Akhir tambah fungsi sendiri
+				if (substr($name, -strlen('not')) == 'Not') {
+					$optname = ($optname == '=')? '<>':'Not '.$optname;
+					$name = substr($name, 0, -strlen('not'));
+				} 
 
+				$name = ($name != strtoupper($name))? strtolower($name):$name;
+
+				$condition = [
+					'where' => [
+						[$name, $optname, $args[0]]
+					]
+				];
+
+				print_r($condition);
+				if (!isset($args[1])) $args[1] = [];
+				if (!isset($args[2])) $args[2] = [];
+				return self::find($condition, $args[1], $args[2]);
+			}
+
+			return FALSE;
+		}
+	}
 
 	/**
 	 * Model Constructor
@@ -110,9 +179,6 @@ class Model {
 
 			$this->add = FALSE;
 
-			//Silakan tambah inisialisasi model sendiri disini
-
-			//-- Akhir tambah inisialisasi model sendiri
 		}
 
 		$this->is_instance = TRUE;
