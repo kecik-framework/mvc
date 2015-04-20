@@ -108,10 +108,7 @@ class Model {
 		}
 		
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
-		if (count($rows) == 1)
-			return $rows[0];
-		else
-			return $rows;
+		return $rows;
 	}
 
 	/**
