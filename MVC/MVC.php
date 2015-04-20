@@ -5,13 +5,13 @@
  ///////////////////////////////////////////////////////////////*/
 
 /**
- * Session - Library untuk framework kecik, library ini khusus untuk membantu masalah session 
+ * MVC - Library untuk framework kecik, library dibuat khusus untuk membantu masalah MVC
  *
  * @author 		Dony Wahyu Isp
  * @copyright 	2015 Dony Wahyu Isp
  * @link 		http://github.com/kecik-framework/session
  * @license		MIT
- * @version 	1.0.2-alpha
+ * @version 	1.0.2
  * @package		Kecik\Session
  **/
 namespace Kecik;
