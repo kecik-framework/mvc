@@ -107,7 +107,11 @@ class Model {
 			}
 		}
 		
-		return self::$db->$table->find($condition, $limit, $order_by);
+		$rows = self::$db->$table->find($condition, $limit, $order_by);
+		if (count($rows) == 1)
+			return $rows[0];
+		else
+			return $rows;
 	}
 
 	/**
@@ -136,6 +140,9 @@ class Model {
 				} elseif (substr($name, -\strlen('between')) == 'Between') {
 					$optname = 'Between';
 					$name = substr($name, 0, -strlen('between'));
+				} elseif (substr($name, -\strlen('in')) == 'In') {
+					$optname = 'in';
+					$name = substr($name, 0, -strlen('in'));
 				} else {
 					$optname = '=';
 					$field = $name;
@@ -153,7 +160,7 @@ class Model {
 						[$name, $optname, $args[0]]
 					]
 				];
-				
+
 				if (!isset($args[1])) $args[1] = [];
 				if (!isset($args[2])) $args[2] = [];
 				return self::find($condition, $args[1], $args[2]);
@@ -184,7 +191,10 @@ class Model {
 	}
 
 	public function __set($field, $value) {
-		self::$_data[$field] = addslashes($value);
+		if (is_array($value))
+			self::$_data[$field] = $value;
+		else
+			self::$_data[$field] = addslashes($value);
 	}
 
 	public function __get($field) {
