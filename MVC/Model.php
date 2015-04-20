@@ -153,8 +153,7 @@ class Model {
 						[$name, $optname, $args[0]]
 					]
 				];
-
-				print_r($condition);
+				
 				if (!isset($args[1])) $args[1] = [];
 				if (!isset($args[2])) $args[2] = [];
 				return self::find($condition, $args[1], $args[2]);
