@@ -45,6 +45,11 @@ class Controller {
 	 * @param array $param
 	 **/
 	protected function view($file, $param=[]) {
+		if (php_sapi_name() == 'cli')
+			$mvc_path = Config::get('path.basepath').Config::get('path.mvc');
+		else
+			$mvc_path = Config::get('path.mvc');
+
 		/*ob_start();
 		extract($param);
 		$myfile = fopen(Config::get('path.mvc').'/views/'.$file.'.php', "r");
@@ -52,9 +57,9 @@ class Controller {
 		fclose($myfile);
 		//$view = file_get_contents( Config::get('path.mvc').'/views/'.$file.'.php' );
 		eval('?>'.$view);
-		$result = ob_get_clean();*/
-
+		$result = ob_get_clean();
+		*/
 		extract($param);
-		include Config::get('path.mvc').'/views/'.$file.'.php';
+		include $mvc_path.'/views/'.$file.'.php';
 	}
 }
