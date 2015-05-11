@@ -23,14 +23,24 @@ namespace Kecik;
  * @since 		1.0.0-alpha
  **/
 class Controller {
+	private $request = '';
+	private $url = '';
+	private $assets = '';
+	private $db = '';
 
 	/**
 	 * Construtor Controller
 	 **/
-	public function __construct() {
+	public function __construct(Kecik $app) {
 		//Silakan tambah inisialisasi controller sendiri disini
 
 		//-- Akhir tambah inisialisasi sendiri
+		
+		$this->request = $app->request;
+		$this->url = $app->url;
+		$this->assets = $app->assets;
+		if (isset($app->db))
+			$this->db = $app->db;
 	}
 
 	//Silakan tambah fungsi controller sendiri disini
