@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "kecik/kecik": "1.0.*@dev",
+        "kecik/kecik": "1.1.*@dev",
         "kecik/database": "1.0.*@dev"
     },
     "autoload": {
