@@ -38,7 +38,7 @@ class Model {
 	public function save() {
 
 		if (empty(static::$table))
-			$table = strtolower(static::class);
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
 		else
 			$table = static::$table;
 
@@ -65,7 +65,7 @@ class Model {
 	public function delete() {
 
 		if (empty(static::$table))
-			$table = strtolower(static::class);
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
 		else
 			$table = static::$table;
 
@@ -92,7 +92,7 @@ class Model {
 		self::$db = MVC::$db;
 
 		if (empty(static::$table))
-			$table = strtolower(static::class);
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
 		else
 			$table = static::$table;
 
@@ -120,7 +120,8 @@ class Model {
 			}
 		}
 		
-		if (is_array(static::callback()) && count(static::callback()))
+
+		if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
 			$condition['callback'] = static::callback();
 
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
