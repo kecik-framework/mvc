@@ -37,8 +37,12 @@ class Model {
 	 **/
 	public function save() {
 
-		if (static::$table != '') {
+		if (empty(static::$table;))
+			$table = static::class;
+		else
 			$table = static::$table;
+
+		if ($table != '') {
 			// Untuk menambah record
 			if ($this->add == TRUE)
 				$ret = self::$db->$table->insert(self::$_data);
@@ -60,9 +64,13 @@ class Model {
 	 **/
 	public function delete() {
 
-		if (static::$table != '') {
+		if (empty(static::$table;))
+			$table = static::class;
+		else
+			$table = static::$table;
+
+		if ($table != '') {
 			if (self::$_id != '' || (is_array(self::$_id) && count(self::$_id) > 0) ) {
-				$table = static::$table;
 				$ret = self::$db->$table->delete(self::$_id);
 				self::$_data = [];
 			} else
@@ -83,7 +91,12 @@ class Model {
 	public static function find($condition=[], $limit=[], $order_by=[]) {
 		self::$db = MVC::$db;
 
-		$table = static::$table;
+		if (empty(static::$table;))
+			$table = static::class;
+		else
+			$table = static::$table;
+
+		
 		if (is_array(static::relational()) && count(static::relational()) > 0) {
 			$relational = static::relational();
 			if (!is_array($relational[0])) {
@@ -107,6 +120,9 @@ class Model {
 			}
 		}
 		
+		if (is_array(static::callback()) && count(static::callback()))
+			$condition['callback'] = static::callback();
+		
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
 		return $rows;
 	}
@@ -119,6 +135,15 @@ class Model {
 	public static function relational() {
 		return [];
 	}
+
+	/**
+	 * callback()
+	 * Overide for callback
+	 * @return array []
+	 **/
+	public static function callback() {
+        return FALSE;
+    }
 
 	/**
 	 * call static findFieldOperator
@@ -138,7 +163,7 @@ class Model {
 					$optname = 'Between';
 					$name = substr($name, 0, -strlen('between'));
 				} elseif (substr($name, -\strlen('in')) == 'In') {
-					$optname = 'in';
+					$optname = 'In';
 					$name = substr($name, 0, -strlen('in'));
 				} else {
 					$optname = '=';
