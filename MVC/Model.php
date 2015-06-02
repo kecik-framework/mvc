@@ -140,7 +140,7 @@ class Model {
 	}
 
 	public static function num_rows() {
-		return self::$db->$table->num_rows();
+		return self::$db->num_rows();
 	}
 
 	/**
