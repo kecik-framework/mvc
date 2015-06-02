@@ -37,8 +37,8 @@ class Model {
 	 **/
 	public function save() {
 
-		if (empty(static::$table;))
-			$table = static::class;
+		if (empty(static::$table))
+			$table = strtolower(static::class);
 		else
 			$table = static::$table;
 
@@ -64,8 +64,8 @@ class Model {
 	 **/
 	public function delete() {
 
-		if (empty(static::$table;))
-			$table = static::class;
+		if (empty(static::$table))
+			$table = strtolower(static::class);
 		else
 			$table = static::$table;
 
@@ -91,8 +91,8 @@ class Model {
 	public static function find($condition=[], $limit=[], $order_by=[]) {
 		self::$db = MVC::$db;
 
-		if (empty(static::$table;))
-			$table = static::class;
+		if (empty(static::$table))
+			$table = strtolower(static::class);
 		else
 			$table = static::$table;
 
@@ -122,7 +122,7 @@ class Model {
 		
 		if (is_array(static::callback()) && count(static::callback()))
 			$condition['callback'] = static::callback();
-		
+
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
 		return $rows;
 	}
