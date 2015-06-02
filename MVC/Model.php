@@ -128,6 +128,21 @@ class Model {
 		return $rows;
 	}
 
+	public static function fields() {
+		self::$db = MVC::$db;
+
+		if (empty(static::$table))
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
+		else
+			$table = static::$table;
+
+		return self::$db->$table->fields();
+	}
+
+	public static function num_rows() {
+		return self::$db->$table->num_rows();
+	}
+
 	/**
 	 * relational()
 	 * Overide for relational
