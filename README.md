@@ -7,7 +7,7 @@ file composer.json
 ```json
 {
 	"require": {
-		"kecik/kecik": "1.0.*@dev",
+		"kecik/kecik": "1.1.*@dev",
 		"kecik/database": "1.0.*@dev",
 		"kecik/mvc": "1.0.*@dev"
 	}
@@ -367,7 +367,7 @@ Lalu buat view untuk form dengan nama file **`form.php`** dan di simpan pada dir
   if ($id != '') {
     $rows = Model\User::find([
       'where' => [
-        ['username', '=', "'$id'"]
+        ['username', '=', $id]
       ]
     ]);
     foreach ($rows as $data) {
