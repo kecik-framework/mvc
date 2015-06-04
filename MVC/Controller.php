@@ -46,6 +46,12 @@ class Controller {
 			$this->container = $app->container;
 		if (isset($app->db))
 			$this->db = $app->db;
+		if (isset($app->session))
+			$this->session = $app->session;
+		if (isset($app->cookie))
+			$this->cookie = $app->cookie;
+		if (isset($app->language))
+			$this->language = $app->language;
 	}
 
 	//Silakan tambah fungsi controller sendiri disini
