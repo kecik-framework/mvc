@@ -26,7 +26,7 @@ class Model {
 	protected static $db = NULL;
 	protected static $table = '';
 	protected static $_id;
-	protected static $_data = [];
+	protected static $_data = array();
 	protected $add = TRUE;
 	protected $is_instance = FALSE;
 
@@ -50,7 +50,7 @@ class Model {
 			else
 				$ret = self::$db->$table->update(self::$_id, self::$_data);
 			
-			self::$_data = [];
+			self::$_data = array();
 		}
 
 		
@@ -72,7 +72,7 @@ class Model {
 		if ($table != '') {
 			if (self::$_id != '' || (is_array(self::$_id) && count(self::$_id) > 0) ) {
 				$ret = self::$db->$table->delete(self::$_id);
-				self::$_data = [];
+				self::$_data = array();
 			} else
 				$ret = FALSE;
 		}
@@ -88,7 +88,7 @@ class Model {
 	 * @param Order By ['asc'=>['field1', 'field2'], 'desc'=>['field3']]
 	 * @return array rows
 	 **/
-	public static function find($condition=[], $limit=[], $order_by=[]) {
+	public static function find($condition=array(), $limit=array(), $order_by=array()) {
 		self::$db = MVC::$db;
 
 		if (empty(static::$table))
@@ -149,7 +149,7 @@ class Model {
 	 * @return array []
 	 **/
 	public static function relational() {
-		return [];
+		return array();
 	}
 
 	/**
@@ -164,7 +164,8 @@ class Model {
 	/**
 	 * call static findFieldOperator
 	 * findName("'name'") or findNameNot("'name'") or findNameLike("'%name%'") or findNameNotLike("'%name%'") or
-	 * findProgressBetween([80, 100]) or findProgressNotBetween([80, 100])
+	 * findProgressBetween([80, 100]) or findProgressNotBetween([80, 100]) or findProgressIn([70, 80, 100]) or
+	 * findProgressNotIn([70, 80, 100])
 	 * @return FALSE or array rows
 	 **/
 	public static function __callStatic($name, $args) {
@@ -199,8 +200,8 @@ class Model {
 					]
 				];
 
-				if (!isset($args[1])) $args[1] = [];
-				if (!isset($args[2])) $args[2] = [];
+				if (!isset($args[1])) $args[1] = array();
+				if (!isset($args[2])) $args[2] = array();
 				return self::find($condition, $args[1], $args[2]);
 			}
 

@@ -33,11 +33,12 @@ class Controller {
 	/**
 	 * Construtor Controller
 	 **/
-	public function __construct(Kecik $app) {
+	public function __construct() {
 		//Silakan tambah inisialisasi controller sendiri disini
 
 		//-- Akhir tambah inisialisasi sendiri
 
+		$app = Kecik::getIntance();
 		$this->request = $app->request;
 		$this->url = $app->url;
 		$this->assets = $app->assets;
@@ -65,7 +66,7 @@ class Controller {
 	 * @param string $file
 	 * @param array $param
 	 **/
-	protected function view($file, $param=[]) {
+	protected function view($file, $param=array()) {
 		if (php_sapi_name() == 'cli')
 			$mvc_path = Config::get('path.basepath').Config::get('path.mvc');
 		else
