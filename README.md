@@ -256,29 +256,29 @@ class User extends Controller {
 	}
 
 	public function insert() {
-		$input = $this->app->input;
+		$request = $this->app->request;
 		$user = new \Model\User();
-			$user->username = $input->post('username');
-			$user->password = md5($input->post('password'));
-			$user->fullname = ucwords($input->post('fullname'));
-			$user->email = $input->post('email');
+			$user->username = $request->post('username');
+			$user->password = md5($request->post('password'));
+			$user->fullname = ucwords($request->post('fullname'));
+			$user->email = $request->post('email');
 		$user->save();
 		$this->app->url->redirect('user');
 	}
 
 	public function update($id) {
-		$input = $this->app->input;
+		$request = $this->app->request;
 		$user = new \Model\User(['username'=>$id]);
-			$user->username = $input->post('username');
-			$user->password = md5($input->post('password'));
-			$user->fullname = ucwords($input->post('fullname'));
-			$user->email = $input->post('email');
+			$user->username = $request->post('username');
+			$user->password = md5($request->post('password'));
+			$user->fullname = ucwords($request->post('fullname'));
+			$user->email = $request->post('email');
 		$user->save();
 		$this->app->url->redirect('user');
 	}
 
 	public function delete($id) {
-		$input = $this->app->input;
+		$request = $this->app->request;
 		$user = new \Model\User(['username' => $id]);
 		$user->delete();
 		$this->app->url->redirect('user');
