@@ -38,7 +38,7 @@ class Controller {
 
 		//-- Akhir tambah inisialisasi sendiri
 
-		$app = Kecik::getIntance();
+		$app = Kecik::getInstance();
 		$this->request = $app->request;
 		$this->url = $app->url;
 		$this->assets = $app->assets;
