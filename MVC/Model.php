@@ -47,8 +47,8 @@ class Model {
 		if ($table != '') {
 			// Untuk menambah record
 			if ($this->add == TRUE) {
-				if (is_array($this->before()) && count($this->before()) > 1) {
-					$before = $this->before();
+				$before = $this->before();
+				if (is_array($before) && count($before) > 1) {
 					if (isset($before['insert'])) {
 						$insert = $before['insert'];
 						while(list($field, $value) = each($insert))
@@ -56,8 +56,8 @@ class Model {
 					}
 				}
 				$ret = self::$db->$table->insert(self::$_data);
-				if (is_array($this->after()) && count($this->after()) > 1) {
-					$after = $this->after();
+				$after = $this->after();
+				if (is_array($after) && count($after) > 1) {
 					if (isset($after['insert']) && is_callable($after['insert'])) {
 						$insert = $after['insert'];
 						$insert(self::$_data);
@@ -66,8 +66,8 @@ class Model {
 			}
 			// Untuk mengupdate record
 			else {
-				if (is_array($this->before()) && count($this->before()) > 1) {
-					$before = $this->before();
+				$before = $this->before();
+				if (is_array($before) && count($before) > 1) {
 					if (isset($before['update'])) {
 						$update = $before['update'];
 						while(list($field, $value) = each($update))
@@ -75,8 +75,8 @@ class Model {
 					}
 				}
 				$ret = self::$db->$table->update(self::$_id, self::$_data);
-				if (is_array($this->after()) && count($this->after()) > 1) {
-					$after = $this->after();
+				$after = $this->after();
+				if (is_array($after) && count($after) > 1) {
 					if (isset($after['update']) && is_callable($after['update'])) {
 						$update = $after['update'];
 						$update(array('pk'=>self::$_id, 'data'=>self::$_data));
@@ -105,8 +105,8 @@ class Model {
 
 		if ($table != '') {
 			if (self::$_id != '' || (is_array(self::$_id) && count(self::$_id) > 0) ) {
-				if (is_array($this->before()) && count($this->before()) > 1) {
-					$before = $this->before();
+				$before = $this->before();
+				if (is_array($before) && count($before) > 1) {
 					if (isset($before['delete'])) {
 						$delete = $before['delete'];
 						while(list($field, $value) = each($delete))
@@ -114,8 +114,8 @@ class Model {
 					}
 				}
 				$ret = self::$db->$table->delete(self::$_id);
-				if (is_array($this->after()) && count($this->after()) > 1) {
-					$after = $this->after();
+				$after = $this->after();
+				if (is_array($after) && count($after) > 1) {
 					if (isset($after['delete']) && is_callable($after['delete'])) {
 						$delete = $after['delete'];
 						$delete(self::$_id);
@@ -283,10 +283,13 @@ class Model {
 	}
 
 	public function __set($field, $value) {
-		if (is_array($value))
+		if (is_array($value)) {
 			self::$_data[$field] = $value;
-		else
+			$this->$field = $value;
+		} else {
 			self::$_data[$field] = addslashes($value);
+			$this->$field = addslashes($value);
+		}
 	}
 
 	public function __get($field) {
