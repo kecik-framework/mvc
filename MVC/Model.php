@@ -25,10 +25,12 @@ namespace Kecik;
 class Model {
 	protected static $db = NULL;
 	protected static $table = '';
+	protected static $pk = null;
 	protected static $_id;
 	protected static $_data = array();
 	protected $add = TRUE;
 	protected $is_instance = FALSE;
+	protected $insert_id = null;
 
 	/**
 	 * save
@@ -44,11 +46,43 @@ class Model {
 
 		if ($table != '') {
 			// Untuk menambah record
-			if ($this->add == TRUE)
+			if ($this->add == TRUE) {
+				if (is_array($this->before()) && count($this->before()) > 1) {
+					$before = $this->before();
+					if (isset($before['insert'])) {
+						$insert = $before['insert'];
+						while(list($field, $value) = each($insert))
+							self::$_data[$field] = $value;
+					}
+				}
 				$ret = self::$db->$table->insert(self::$_data);
+				if (is_array($this->after()) && count($this->after()) > 1) {
+					$after = $this->after();
+					if (isset($after['insert']) && is_callable($after['insert'])) {
+						$insert = $after['insert'];
+						$insert(self::$_data);
+					}
+				}
+			}
 			// Untuk mengupdate record
-			else
+			else {
+				if (is_array($this->before()) && count($this->before()) > 1) {
+					$before = $this->before();
+					if (isset($before['update'])) {
+						$update = $before['update'];
+						while(list($field, $value) = each($update))
+							self::$_data[$field] = $value;
+					}
+				}
 				$ret = self::$db->$table->update(self::$_id, self::$_data);
+				if (is_array($this->after()) && count($this->after()) > 1) {
+					$after = $this->after();
+					if (isset($after['update']) && is_callable($after['update'])) {
+						$update = $after['update'];
+						$update(array('pk'=>self::$_id, 'data'=>self::$_data));
+					}
+				}
+			}
 			
 			self::$_data = array();
 		}
@@ -71,7 +105,22 @@ class Model {
 
 		if ($table != '') {
 			if (self::$_id != '' || (is_array(self::$_id) && count(self::$_id) > 0) ) {
+				if (is_array($this->before()) && count($this->before()) > 1) {
+					$before = $this->before();
+					if (isset($before['delete'])) {
+						$delete = $before['delete'];
+						while(list($field, $value) = each($delete))
+							self::$_id[$field] = $value;
+					}
+				}
 				$ret = self::$db->$table->delete(self::$_id);
+				if (is_array($this->after()) && count($this->after()) > 1) {
+					$after = $this->after();
+					if (isset($after['delete']) && is_callable($after['delete'])) {
+						$delete = $after['delete'];
+						$delete(self::$_id);
+					}
+				}
 				self::$_data = array();
 			} else
 				$ret = FALSE;
@@ -161,6 +210,10 @@ class Model {
         return FALSE;
     }
 
+    public function insert_id($field_id='') {
+    	return $this->insert_id($field_id);
+    }
+
 	/**
 	 * call static findFieldOperator
 	 * findName("'name'") or findNameNot("'name'") or findNameLike("'%name%'") or findNameNotLike("'%name%'") or
@@ -237,6 +290,9 @@ class Model {
 	}
 
 	public function __get($field) {
-		return stripslashes(self::$_data[$field]);
+		if (isset($this->$field))
+			return stripslashes(self::$_data[$field]);
+		else
+			return null;
 	}
 } 
