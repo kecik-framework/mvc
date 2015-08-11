@@ -140,9 +140,10 @@ class Model {
 	public static function find($condition=array(), $limit=array(), $order_by=array()) {
 		self::$db = MVC::$db;
 
-		if (empty(static::$table))
+		if (empty(static::$table)) {
 			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
-		else
+			static::$table = $table;
+		} else
 			$table = static::$table;
 
 		
@@ -150,21 +151,33 @@ class Model {
 			$relational = static::relational();
 			if (!is_array($relational[0])) {
 				$model = '\Model\\'.$relational[0];
+
+				if (empty($model::$table)) 
+					$join_table = strtolower($relational[0]);
+				else
+					$join_table = $model::$table;
+
 				if (count($relational) == 1)
-					$condition['join'][] = ['natural', $model::$table];
+					$condition['join'][] = ['natural', $join_table];
 				elseif (count($relational) == 2)
-					$condition['join'][] = ['left', $model::$table, $relational[1]];
+					$condition['join'][] = ['left', $join_table, $relational[1]];
 				elseif (count($relational) == 3)
-					$condition['join'][] = ['left', $model::$table, [$relational[1], $relational[2]]];
+					$condition['join'][] = ['left', $join_table, [$relational[1], $relational[2]]];
 			} else {
 				while(list($id, $relation) = each($relational) ) {
 					$model = '\Model\\'.$relation[0];
+
+					if (empty($model::$table)) 
+						$join_table = strtolower($relation[0]);
+					else
+						$join_table = $model::$table;
+
 					if (count($relation) == 1)
-						$condition['join'][] = ['natural', $model::$table];
+						$condition['join'][] = ['natural', $join_table];
 					elseif (count($relation) == 2)
-						$condition['join'][] = ['left', $model::$table, $relation[1]];
+						$condition['join'][] = ['left', $join_table, $relation[1]];
 					elseif (count($relation) == 3)
-						$condition['join'][] = ['left', $model::$table, [$relation[1], $relation[2]]];
+						$condition['join'][] = ['left', $join_table, [$relation[1], $relation[2]]];
 				}
 			}
 		}
