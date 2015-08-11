@@ -149,10 +149,10 @@ class Model {
 		
 		if (is_array(static::relational()) && count(static::relational()) > 0) {
 			$relational = static::relational();
-			if (!is_array($relational[0])) {
+			if (isset($relational[0]) && !is_array($relational[0])) {
 				$model = '\Model\\'.$relational[0];
 
-				if (empty($model::$table)) 
+				if ($table == $model::$table || empty($model::$table)) 
 					$join_table = strtolower($relational[0]);
 				else
 					$join_table = $model::$table;
@@ -166,8 +166,8 @@ class Model {
 			} else {
 				while(list($id, $relation) = each($relational) ) {
 					$model = '\Model\\'.$relation[0];
-
-					if (empty($model::$table)) 
+					
+					if ($table == $model::$table || empty($model::$table)) 
 						$join_table = strtolower($relation[0]);
 					else
 						$join_table = $model::$table;
