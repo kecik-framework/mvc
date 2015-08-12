@@ -129,6 +129,60 @@ class Model {
 		return $ret;
 	}
 
+	private static function __join($model, &$condition) {
+		$modeljoin = '\Model\\'.$model;
+		if (empty($modeljoin::$table)) {
+			$table = strtolower($model);
+		} else
+			$table = $modeljoin::$table;
+
+		if (is_array($modeljoin::relational()) && count($modeljoin::relational()) > 0) {
+			$relational = $modeljoin::relational();
+			if (isset($relational[0]) && !is_array($relational[0])) {
+				$model = '\Model\\'.$relational[0];
+
+				if ($table == $model::$table || empty($model::$table)) 
+					$join_table = strtolower($relational[0]);
+				else
+					$join_table = $model::$table;
+
+				if (strpos($relational[1], '.') === false)
+					$relational[1] = "$join_table.$relational[1]";
+				
+				if (strpos($relational[2], '.') == false)
+					$relational[2] = "$table.$relational[2]";
+
+				$condition['join'][] = ['left', $join_table, [$relational[1], $relational[2]]];
+
+				$modeljoin = $relational[0];
+				self::__join($modeljoin, $condition);
+			} else {
+				while(list($id, $relation) = each($relational) ) {
+					$model = '\Model\\'.$relation[0];
+					
+					if ($table == $model::$table || empty($model::$table)) 
+						$join_table = strtolower($relation[0]);
+					else
+						$join_table = $model::$table;
+
+					if (strpos($relation[1], '.') === false)
+						$relation[1] = "$join_table.$relation[1]";
+					
+					if (strpos($relational[2], '.') == false)
+						$relation[2] = "$table.$relation[2]";
+
+					$condition['join'][] = ['left', $join_table, [$relation[1], $relation[2]]];
+				}
+
+				reset($relational);
+				while (list($id, $relation) = each($relational)) {
+					$modeljoin = $relation[0];
+					self::__join($modeljoin, $condition);
+				}
+			}
+		}
+	}
+
 	/**
 	 * find
 	 * function for select query
@@ -140,10 +194,9 @@ class Model {
 	public static function find($condition=array(), $limit=array(), $order_by=array()) {
 		self::$db = MVC::$db;
 
-		if (empty(static::$table)) {
+		if (empty(static::$table)) 
 			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
-			static::$table = $table;
-		} else
+		else
 			$table = static::$table;
 
 		
@@ -163,6 +216,9 @@ class Model {
 					$condition['join'][] = ['left', $join_table, $relational[1]];
 				elseif (count($relational) == 3)
 					$condition['join'][] = ['left', $join_table, [$relational[1], $relational[2]]];
+
+				$modeljoin = $relational[0];
+				self::__join($modeljoin, $condition);
 			} else {
 				while(list($id, $relation) = each($relational) ) {
 					$model = '\Model\\'.$relation[0];
@@ -178,6 +234,12 @@ class Model {
 						$condition['join'][] = ['left', $join_table, $relation[1]];
 					elseif (count($relation) == 3)
 						$condition['join'][] = ['left', $join_table, [$relation[1], $relation[2]]];
+				}
+
+				reset($relational);
+				while (list($id, $relation) = each($relational)) {
+					$modeljoin = $relation[0];
+					self::__join($modeljoin, $condition);
 				}
 			}
 		}
