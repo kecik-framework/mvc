@@ -146,6 +146,8 @@ class Model {
 				else
 					$join_table = $model::$table;
 
+				if (!isset($relational[2])) $relational[2] = $relational[1];
+
 				if (strpos($relational[1], '.') === false)
 					$relational[1] = "$join_table.$relational[1]";
 				
@@ -165,10 +167,12 @@ class Model {
 					else
 						$join_table = $model::$table;
 
+					if (!isset($relation[2])) $relation[2] = $relation[1];
+
 					if (strpos($relation[1], '.') === false)
 						$relation[1] = "$join_table.$relation[1]";
 					
-					if (strpos($relational[2], '.') == false)
+					if (strpos($relation[2], '.') == false)
 						$relation[2] = "$table.$relation[2]";
 
 					$condition['join'][] = ['left', $join_table, [$relation[1], $relation[2]]];
