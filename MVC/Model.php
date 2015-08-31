@@ -31,7 +31,7 @@ class Model {
 	protected $add = TRUE;
 	protected $is_instance = FALSE;
 	protected $insert_id = null;
-
+	
 	/**
 	 * save
 	 * Fungsi untuk menambah atau mengupdate record (Insert/Update)
@@ -293,6 +293,62 @@ class Model {
     	return $this->insert_id($field_id);
     }
 
+    public static function raw_find($condition=array(), $limit=array(), $order_by=array()) {
+    	self::$db = MVC::$db;
+
+		if (empty(static::$table)) 
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
+		else
+			$table = static::$table;
+
+		
+		if (is_array(static::relational()) && count(static::relational()) > 0) {
+			$relational = static::relational();
+			if (isset($relational[0]) && !is_array($relational[0])) {
+				$model = '\Model\\'.$relational[0];
+
+				if ($table == $model::$table || empty($model::$table)) 
+					$join_table = strtolower($relational[0]);
+				else
+					$join_table = $model::$table;
+
+				if (count($relational) == 1)
+					$condition['join'][] = ['natural', $join_table];
+				elseif (count($relational) == 2)
+					$condition['join'][] = ['left', $join_table, $relational[1]];
+				elseif (count($relational) == 3)
+					$condition['join'][] = ['left', $join_table, [$relational[1], $relational[2]]];
+
+				$modeljoin = $relational[0];
+				self::__join($modeljoin, $condition);
+			} else {
+				while(list($id, $relation) = each($relational) ) {
+					$model = '\Model\\'.$relation[0];
+					
+					if ($table == $model::$table || empty($model::$table)) 
+						$join_table = strtolower($relation[0]);
+					else
+						$join_table = $model::$table;
+
+					if (count($relation) == 1)
+						$condition['join'][] = ['natural', $join_table];
+					elseif (count($relation) == 2)
+						$condition['join'][] = ['left', $join_table, $relation[1]];
+					elseif (count($relation) == 3)
+						$condition['join'][] = ['left', $join_table, [$relation[1], $relation[2]]];
+				}
+
+				reset($relational);
+				while (list($id, $relation) = each($relational)) {
+					$modeljoin = $relation[0];
+					self::__join($modeljoin, $condition);
+				}
+			}
+		}
+
+		return self::$db->$table->raw_find($condition, $limit, $order_by);
+    }
+
 	/**
 	 * call static findFieldOperator
 	 * findName("'name'") or findNameNot("'name'") or findNameLike("'%name%'") or findNameNotLike("'%name%'") or
@@ -372,9 +428,27 @@ class Model {
 	}
 
 	public function __get($field) {
+
 		if (isset($this->$field))
 			return stripslashes(self::$_data[$field]);
-		else
+		else {
+			// Get for Update
+			if ($this->add != TRUE) {
+				$fields = self::fields();
+				$rows = self::find(array('where'=>array(self::$_id)), array(1));
+				foreach ($rows as $row) {
+					foreach($fields as $field_data) {
+						$field_name = $field_data->name;
+						$this->$field_name = $row->$field_name;
+						self::$_data[$field_name] = $row->$field_name;	
+					}
+				}
+
+				if (isset($this->$field))
+					return stripslashes(self::$_data[$field]);
+			}
+			// End Get for Update
 			return null;
+		}
 	}
 } 
