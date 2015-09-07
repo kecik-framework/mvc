@@ -434,8 +434,13 @@ class Model {
 		else {
 			// Get for Update
 			if ($this->add != TRUE) {
+				$where = array();
+				while(list($f, $val)=each(self::$_id))
+					array_push($where, array($f, '=', $val));
+				
 				$fields = self::fields();
-				$rows = self::find(array('where'=>array(self::$_id)), array(1));
+				$rows = self::find(array('where'=>$where), array(1));
+
 				foreach ($rows as $row) {
 					foreach($fields as $field_data) {
 						$field_name = $field_data->name;
@@ -443,7 +448,7 @@ class Model {
 						self::$_data[$field_name] = $row->$field_name;	
 					}
 				}
-
+				
 				if (isset($this->$field))
 					return stripslashes(self::$_data[$field]);
 			}
