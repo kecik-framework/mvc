@@ -27,6 +27,7 @@ class Controller {
 	protected $url = '';
 	protected $assets = '';
 	protected $config = '';
+	protected $route = '';
 	//protected $container = '';
 	//protected $db = '';
 
@@ -43,7 +44,16 @@ class Controller {
 		$this->url = $app->url;
 		$this->assets = $app->assets;
 		$this->config = $app->config;
-		if (isset($app->container))
+		$this->route = $app->route;
+
+		$libraries = $app->getLibrariesEnabled();
+		while(list($idx, $library) = each($libraries)) {
+			$lib = $library[0];
+			if (isset($app->$lib))
+			$this->$Lib = $app->$lib;
+		}
+			
+		/*if (isset($app->container))
 			$this->container = $app->container;
 		if (isset($app->db))
 			$this->db = $app->db;
@@ -52,7 +62,7 @@ class Controller {
 		if (isset($app->cookie))
 			$this->cookie = $app->cookie;
 		if (isset($app->language))
-			$this->language = $app->language;
+			$this->language = $app->language;*/
 	}
 
 	//Silakan tambah fungsi controller sendiri disini
