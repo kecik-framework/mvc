@@ -289,6 +289,14 @@ class Model {
         return FALSE;
     }
 
+    public function before() {
+    	return array();
+    }
+
+    public function after() {
+    	return array();
+    }
+    
     public function insert_id($field_id='') {
     	return $this->insert_id($field_id);
     }
