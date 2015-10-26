@@ -44,6 +44,13 @@ class Model {
 		else
 			$table = static::$table;
 
+		if (count(self::$_data) <= 0 ) {
+			while(list($field, $value) = each(self::$_data)) {
+				self::$_data[$field] = addslashes($value);
+				$this->$field = $value;
+			}
+		}
+
 		if ($table != '') {
 			// Untuk menambah record
 			if ($this->add == TRUE) {
