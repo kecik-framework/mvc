@@ -6,11 +6,12 @@ Merupakan pustaka/library yang dibuat khusus Framework Kecik, pustaka/library in
 file composer.json
 ```json
 {
-	"require": {
-		"kecik/kecik": "1.1.*@dev",
-		"kecik/database": "1.0.*@dev",
-		"kecik/mvc": "1.0.*@dev"
-	}
+    "require": {
+        "kecik/kecik": "1.1.*@dev",
+        "kecik/dic": "1.0.*@dev",
+        "kecik/database": "1.0.*@dev",
+        "kecik/mvc": "1.0.*@dev"
+    }
 }
 ```
 
@@ -50,12 +51,12 @@ Lalu simpan juga kedalam direktori **`assets/css`**.
 Lalu buat file **`composer.json`** dengan isi berikut ini:
 ```json
 {
-	"require": {
-		"kecik/kecik": "1.0.*@dev",
-		"kecik/dic": "1.0.*@dev",
-		"kecik/database": "1.0.*@dev",
-		"kecik/mvc": "1.0.*@dev"
-	}
+    "require": {
+        "kecik/kecik": "1.0.*@dev",
+        "kecik/dic": "1.0.*@dev",
+        "kecik/database": "1.0.*@dev",
+        "kecik/mvc": "1.0.*@dev"
+    }
 }
 ```
 
@@ -85,89 +86,89 @@ Selanjutnya buat file **`index.php`** dengan isi sebagai berikut:
 require "vendor/autoload.php";
 
 $config = [
-	//** Path of Assets
-	'path.assets'   => 'assets',
-	//** Path of MVC
-	'path.mvc'      => 'app',
-	//** Path of Template
-	'path.template' => 'templates',
-	
-	//** Load Libraries
-	'libraries' => [
-		//-- DIC Library
-		'DIC' => ['enable' => TRUE],
-		//-- Database Library
-		'Database' => [
-			'enable' => TRUE,
-			'config' => [
-				'driver' => 'mysqli',
-				'hostname' => 'localhost',
-				'username' => 'root',
-				'password' => '',
-				'dbname' => 'kecik'
-			]
-		],
-		//-- MVC Library
-		'MVC' => ['enable' => TRUE]
-	]
-	//-- End Libraries
+    //** Path of Assets
+    'path.assets'   => 'assets',
+    //** Path of MVC
+    'path.mvc'      => 'app',
+    //** Path of Template
+    'path.template' => 'templates',
+    
+    //** Load Libraries
+    'libraries' => [
+        //-- DIC Library
+        'DIC' => ['enable' => TRUE],
+        //-- Database Library
+        'Database' => [
+            'enable' => TRUE,
+            'config' => [
+                'driver' => 'mysqli',
+                'hostname' => 'localhost',
+                'username' => 'root',
+                'password' => '',
+                'dbname' => 'kecik'
+            ]
+        ],
+        //-- MVC Library
+        'MVC' => ['enable' => TRUE]
+    ]
+    //-- End Libraries
 ];
 
 $app = new Kecik\Kecik($config);
 
-	//** Assets
-	//-- CSS Assets
-	$app->assets->css->add('bootstrap.min');
-	$app->assets->css->add('bootstrap-theme.min');
-	$app->assets->css->add('starter-template');
-	//-- END CSS Assets
-	//-- END Assets
+    //** Assets
+    //-- CSS Assets
+    $app->assets->css->add('bootstrap.min');
+    $app->assets->css->add('bootstrap-theme.min');
+    $app->assets->css->add('starter-template');
+    //-- END CSS Assets
+    //-- END Assets
 
-	//** Connect to Database
-	$app->db->connect();
+    //** Connect to Database
+    $app->db->connect();
 
-	//** DIC Container
-	//-- User Controller
-	$app->container['userController'] = function($container) {
-		return new Controller\User($this);
-	};
-	//-- END
-	
-	//** Index
-	$app->get('/', function() {
-		return $this->container['userController']->index();
-	})->template('bootstrap_template');
-	
-	//** User List
-	$app->get('user', function() {
-		return $this->container['userController']->read();
-	})->template('bootstrap_template');
+    //** DIC Container
+    //-- User Controller
+    $app->container['userController'] = function($container) {
+        return new Controller\User();
+    };
+    //-- END
+    
+    //** Index
+    $app->get('/', function() {
+        return $this->container['userController']->index();
+    })->template('bootstrap_template');
+    
+    //** User List
+    $app->get('user', function() {
+        return $this->container['userController']->read();
+    })->template('bootstrap_template');
 
-	//** FORM
-	//-- FORM Add
-	$app->get('add', function() {
-		return $this->container['userController']->form();
-	})->template('bootstrap_template');
-	//-- FORM Update
-	$app->get('edit/:username', function($username) {
-		return $this->container['userController']->form($username);
-	})->template('bootstrap_template');
-	//-- END FORM
+    //** FORM
+    //-- FORM Add
+    $app->get('add', function() {
+        return $this->container['userController']->form();
+    })->template('bootstrap_template');
+    //-- FORM Update
+    $app->get('edit/:username', function($username) {
+        return $this->container['userController']->form($username);
+    })->template('bootstrap_template');
+    //-- END FORM
 
-	//** Action INSERT, UPDATE, AND DELETE
-	//-- INSERT
-	$app->post('insert', function() {
-		return $this->container['userController']->insert();
-	});
-	//-- UPDATE
-	$app->post('update/:username', function($username) {
-		return $this->container['userController']->update($username);
-	});
-	//-- DELETE
-	$app->get('delete/:username', function($username) {
-		return $this->container['userController']->delete($username);
-	});
-	//-- END Action
+    //** Action INSERT, UPDATE, AND DELETE
+    //-- INSERT
+    $app->post('insert', function() {
+        return $this->container['userController']->insert();
+    });
+    //-- UPDATE
+    $app->post('update/:username', function($username) {
+        return $this->container['userController']->update($username);
+    });
+    //-- DELETE
+    $app->get('delete/:username', function($username) {
+        return $this->container['userController']->delete($username);
+    });
+    //-- END Action
 
 $app->run();
 ```
@@ -182,15 +183,15 @@ Untuk template ketikan code berikut ini, nama file adalah **`templates/bootstrap
         <title>Contoh MVC</title>
         
         <meta charset="utf-8">
-		<title>Simple Template</title>
+        <title>Simple Template</title>
 
-		<meta name="description" content="overview &amp; stats" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		
-		@css
-	</head>
-	<body>
-		<nav class="navbar navbar-inverse navbar-fixed-top">
+        <meta name="description" content="overview &amp; stats" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        
+        @css
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -204,7 +205,7 @@ Untuk template ketikan code berikut ini, nama file adalah **`templates/bootstrap
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li class="active"><a href="{{ $this->url->to('') }}">Home</a></li>
-            <li><a href="{{ $this->url->to('data') }}">User</a></li>
+            <li><a href="{{ $this->url->to('user') }}">User</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -215,10 +216,10 @@ Untuk template ketikan code berikut ini, nama file adalah **`templates/bootstrap
         @response
 
     </div><!-- /.container -->
-		
+        
 
-		@js
-	</body>
+        @js
+    </body>
 </html>
 ```
 
@@ -231,58 +232,56 @@ namespace Controller;
 use Kecik\Controller;
 
 class User extends Controller {
-	var $app = NULL;
 
-	public function __construct(\Kecik\Kecik $app) {
-		parent::__construct();
-		$this->app = $app;
-	}
+    public function __construct() {
+        parent::__construct();
+    }
 
-	public function index() {
-		return $this->view('index');
-	}
+    public function index() {
+        return $this->view('index');
+    }
 
-	public function read() {
-		return $this->view('read');
-	}
+    public function read() {
+        return $this->view('read');
+    }
 
-	public function form($id='') {
-		if ($id=='') 
-			$url = $this->app->url->linkto('insert');
-		else
-			$url = $this->app->url->linkto('update/'.$id);
+    public function form($id='') {
+        if ($id=='') 
+            $url = $this->url->linkto('insert');
+        else
+            $url = $this->url->linkto('update/'.$id);
 
-		return $this->view('form', ['id'=>$id, 'url'=>$url]);
-	}
+        return $this->view('form', ['id'=>$id, 'url'=>$url]);
+    }
 
-	public function insert() {
-		$request = $this->app->request;
-		$user = new \Model\User();
-			$user->username = $request->post('username');
-			$user->password = md5($request->post('password'));
-			$user->fullname = ucwords($request->post('fullname'));
-			$user->email = $request->post('email');
-		$user->save();
-		$this->app->url->redirect('user');
-	}
+    public function insert() {
+        $request = $this->request;
+        $user = new \Model\User();
+            $user->username = $request->post('username');
+            $user->password = md5($request->post('password'));
+            $user->fullname = ucwords($request->post('fullname'));
+            $user->email = $request->post('email');
+        $user->save();
+        $this->url->redirect('user');
+    }
 
-	public function update($id) {
-		$request = $this->app->request;
-		$user = new \Model\User(['username'=>$id]);
-			$user->username = $request->post('username');
-			$user->password = md5($request->post('password'));
-			$user->fullname = ucwords($request->post('fullname'));
-			$user->email = $request->post('email');
-		$user->save();
-		$this->app->url->redirect('user');
-	}
+    public function update($id) {
+        $request = $this->request;
+        $user = new \Model\User(['username'=>$id]);
+            $user->username = $request->post('username');
+            $user->password = md5($request->post('password'));
+            $user->fullname = ucwords($request->post('fullname'));
+            $user->email = $request->post('email');
+        $user->save();
+        $this->url->redirect('user');
+    }
 
-	public function delete($id) {
-		$request = $this->app->request;
-		$user = new \Model\User(['username' => $id]);
-		$user->delete();
-		$this->app->url->redirect('user');
-	}
+    public function delete($id) {
+        $request = $this->request;
+        $user = new \Model\User(['username' => $id]);
+        $user->delete();
+        $this->url->redirect('user');
+    }
 }
 ```
 
@@ -295,11 +294,11 @@ namespace Model;
 use Kecik\Model;
 
 class User extends Model {
-	protected static $table = 'user';
+    protected static $table = 'user';
 
-	public function __construct($id='') {
-		parent::__construct($id);
-	}
+    public function __construct($id='') {
+        parent::__construct($id);
+    }
 }
 ```
 
@@ -307,17 +306,17 @@ Selanjutnya buat bagian views untuk tampilan index, form, dan read. Pertama kita
 
 ```html
 <div class="starter-template">
-	<h2>Framework Kecik</h2>
-	<p align="justify">
-		Merupakan framework dengan satu file system yang sangat sederhana, jadi ini bukan merupakan sebuah framework yang 
-		kompleks, tapi anda dapat membangun dan mengembangkan framework ini untuk menjadi sebuah framework yang kompleks.
-		Framework ini mendukung MVC sederhana dimana anda masih harus mengcustom beberapa code untuk mendapatkan MVC yang
-		kompleks, untuk Model hanya sebatas men-generate perintah SQL untuk INSERT, UPDATE dan DELETE saja, jadi untuk 
-		code pengeksekusian SQL nya tersebut silakan dibuat sendiri dengan bebas mau menggunakan library database manapun.
-		Framework ini juga mendukung Composer, jadi bisa memudahkan anda untuk menambahkan sebuah library dari composer.
-	</p>
+    <h2>Framework Kecik</h2>
+    <p align="justify">
+        Merupakan framework dengan satu file system yang sangat sederhana, jadi ini bukan merupakan sebuah framework yang 
+        kompleks, tapi anda dapat membangun dan mengembangkan framework ini untuk menjadi sebuah framework yang kompleks.
+        Framework ini mendukung MVC sederhana dimana anda masih harus mengcustom beberapa code untuk mendapatkan MVC yang
+        kompleks, untuk Model hanya sebatas men-generate perintah SQL untuk INSERT, UPDATE dan DELETE saja, jadi untuk 
+        code pengeksekusian SQL nya tersebut silakan dibuat sendiri dengan bebas mau menggunakan library database manapun.
+        Framework ini juga mendukung Composer, jadi bisa memudahkan anda untuk menambahkan sebuah library dari composer.
+    </p>
 
-	<h1>EXAMPLE/CONTOH MVC</h1>
+    <h1>EXAMPLE/CONTOH MVC</h1>
 </div>
 ```
 
@@ -325,38 +324,38 @@ Lalu buat file view untuk read dengan nama file **`read.php`** dan disimpan pada
 
 ```html
 <br />
-<a href="<?php $this->app->url->to('index.php/add') ?>" class="btn btn-success">Add Data</a><br />
+<a href="<?php $this->url->to('index.php/add') ?>" class="btn btn-success">Add Data</a><br />
 
 <table class="table table-striped table-hover">
-	<thead>
-		<tr>
-			<th>NO</th>
-			<th>USERNAME</th>
-			<th>EMAIL</th>
-			<th>ACTION</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th>NO</th>
+            <th>USERNAME</th>
+            <th>EMAIL</th>
+            <th>ACTION</th>
+        </tr>
+    </thead>
 
-	<tbody>
-		<?php
-		$rows = Model\User::find();
-		$no = 1;
-		foreach ($rows as $data) {
-		?>
-		<tr>
-			<td><?php echo $no; ?></td>
-			<td><?php echo $data->username; ?></td>
-			<td><?php echo $data->email; ?></td>
-			<td>
-				<a href="<?php $this->app->url->to('index.php/edit/'.$data->username) ?>" class="btn btn-primary">UPDATE</a>
-				<a href="<?php $this->app->url->to('index.php/delete/'.$data->username) ?>" class="btn btn-danger">DELETE</a>
-			</td>
-		</tr>
-		<?php
-			$no++;
-		}
-		?>
-	</tbody>
+    <tbody>
+        <?php
+        $rows = Model\User::find();
+        $no = 1;
+        foreach ($rows as $data) {
+        ?>
+        <tr>
+            <td><?php echo $no; ?></td>
+            <td><?php echo $data->username; ?></td>
+            <td><?php echo $data->email; ?></td>
+            <td>
+                <a href="<?php $this->url->to('index.php/edit/'.$data->username) ?>" class="btn btn-primary">UPDATE</a>
+                <a href="<?php $this->url->to('index.php/delete/'.$data->username) ?>" class="btn btn-danger">DELETE</a>
+            </td>
+        </tr>
+        <?php
+            $no++;
+        }
+        ?>
+    </tbody>
 </table>
 ```
 
@@ -399,3 +398,4 @@ Lalu buat view untuk form dengan nama file **`form.php`** dan di simpan pada dir
   <button type="submit" class="btn btn-default">Save</button>
 </form>
 ```
+
