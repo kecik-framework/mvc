@@ -45,7 +45,8 @@ class Model {
 			$table = static::$table;
 
 		if (count(self::$_data) <= 0 ) {
-			while(list($field, $value) = each(self::$_data)) {
+			$post = $_POST;
+			while(list($field, $value) = each($post)) {
 				self::$_data[$field] = addslashes($value);
 				$this->$field = $value;
 			}
