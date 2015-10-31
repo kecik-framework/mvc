@@ -47,6 +47,10 @@ class Model {
 		if (count(self::$_data) <= 0 ) {
 			$post = $_POST;
 			while(list($field, $value) = each($post)) {
+				// Next if is Primary Keys
+				if (array_key_exists($fields, self::$_id))
+					continue;
+				
 				self::$_data[$field] = addslashes($value);
 				$this->$field = $value;
 			}
