@@ -111,6 +111,8 @@ class Controller {
 			
 		}
 		
-		include $view_path.'/views/'.$file.'.php';
+		ob_start();
+			include $view_path.'/views/'.$file.'.php';
+		return ob_get_clean();
 	}
 }
