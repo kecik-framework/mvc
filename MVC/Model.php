@@ -464,12 +464,12 @@ class Model {
 				foreach ($rows as $row) {
 					foreach($fields as $field_data) {
 						$field_name = $field_data->name;
-						$this->$field_name = $row->$field_name;
+						// $this->$field_name = $row->$field_name;
 						self::$_data[$field_name] = $row->$field_name;	
 					}
 				}
 				
-				if (isset($this->$field))
+				if (isset(self::$_data[$field]))
 					return stripslashes(self::$_data[$field]);
 			}
 			// End Get for Update
