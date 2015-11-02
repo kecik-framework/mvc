@@ -449,7 +449,7 @@ class Model {
 
 	public function __get($field) {
 
-		if (isset($this->$field))
+		if (isset(self::$_data[$field]))
 			return stripslashes(self::$_data[$field]);
 		else {
 			// Get for Update
