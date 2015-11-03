@@ -260,9 +260,10 @@ class Model {
 			}
 		}
 		
-
-		if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
-			$condition['callback'] = static::callback();
+		if (self::$_id == '') {
+			if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
+				$condition['callback'] = static::callback();
+		}
 
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
 		return $rows;
@@ -459,6 +460,7 @@ class Model {
 					array_push($where, array($f, '=', $val));
 				
 				$fields = self::fields();
+
 				$rows = self::find(array('where'=>$where), array(1));
 
 				foreach ($rows as $row) {
