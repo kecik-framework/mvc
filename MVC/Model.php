@@ -26,8 +26,8 @@ class Model {
 	protected static $db = NULL;
 	protected static $table = '';
 	protected static $pk = null;
-	protected static $_id;
-	protected static $_data = array();
+	protected $_id;
+	protected $_data = array();
 	protected $add = TRUE;
 	protected $is_instance = FALSE;
 	protected $insert_id = null;
@@ -44,14 +44,14 @@ class Model {
 		else
 			$table = static::$table;
 
-		if (count(self::$_data) <= 0 ) {
+		if (count($this->_data[$table]) <= 0 ) {
 			$post = $_POST;
 			while(list($field, $value) = each($post)) {
 				// Next if is Primary Keys
-				if (array_key_exists($field, self::$_id))
+				if (array_key_exists($field, $this->_id))
 					continue;
 				
-				self::$_data[$field] = addslashes($value);
+				$this->_data[$table][$field] = addslashes($value);
 				$this->$field = $value;
 			}
 		}
@@ -64,15 +64,15 @@ class Model {
 					if (isset($before['insert'])) {
 						$insert = $before['insert'];
 						while(list($field, $value) = each($insert))
-							self::$_data[$field] = $value;
+							$this->_data[$table][$field] = $value;
 					}
 				}
-				$ret = self::$db->$table->insert(self::$_data);
+				$ret = self::$db->$table->insert($this->_data[$table]);
 				$after = $this->after();
 				if (is_array($after) && count($after) > 1) {
 					if (isset($after['insert']) && is_callable($after['insert'])) {
 						$insert = $after['insert'];
-						$insert(self::$_data);
+						$insert($this->_data[$table]);
 					}
 				}
 			}
@@ -83,20 +83,20 @@ class Model {
 					if (isset($before['update'])) {
 						$update = $before['update'];
 						while(list($field, $value) = each($update))
-							self::$_data[$field] = $value;
+							$this->_data[$table][$field] = $value;
 					}
 				}
-				$ret = self::$db->$table->update(self::$_id, self::$_data);
+				$ret = self::$db->$table->update($this->_id, $this->_data[$table]);
 				$after = $this->after();
 				if (is_array($after) && count($after) > 1) {
 					if (isset($after['update']) && is_callable($after['update'])) {
 						$update = $after['update'];
-						$update(array('pk'=>self::$_id, 'data'=>self::$_data));
+						$update(array('pk'=>$this->_id, 'data'=>$this->_data[$table]));
 					}
 				}
 			}
 			
-			self::$_data = array();
+			$this->_data[$table] = array();
 		}
 
 		
@@ -116,24 +116,24 @@ class Model {
 			$table = static::$table;
 
 		if ($table != '') {
-			if (self::$_id != '' || (is_array(self::$_id) && count(self::$_id) > 0) ) {
+			if ($this->_id != '' || (is_array($this->_id) && count($this->_id) > 0) ) {
 				$before = $this->before();
 				if (is_array($before) && count($before) > 1) {
 					if (isset($before['delete'])) {
 						$delete = $before['delete'];
 						while(list($field, $value) = each($delete))
-							self::$_id[$field] = $value;
+							$this->_id[$field] = $value;
 					}
 				}
-				$ret = self::$db->$table->delete(self::$_id);
+				$ret = self::$db->$table->delete($this->_id);
 				$after = $this->after();
 				if (is_array($after) && count($after) > 1) {
 					if (isset($after['delete']) && is_callable($after['delete'])) {
 						$delete = $after['delete'];
-						$delete(self::$_id);
+						$delete($this->_id);
 					}
 				}
-				self::$_data = array();
+				$this->_data[$table] = array();
 			} else
 				$ret = FALSE;
 		}
@@ -260,10 +260,8 @@ class Model {
 			}
 		}
 		
-		if (self::$_id == '') {
-			if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
-				$condition['callback'] = static::callback();
-		}
+		if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
+			$condition['callback'] = static::callback();
 
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
 		return $rows;
@@ -427,9 +425,9 @@ class Model {
 
 		if ($id != '') {
 			if (is_array($id))
-				self::$_id = $id;
+				$this->_id = $id;
 			else 
-				self::$_id['id'] = $id;
+				$this->_id['id'] = $id;
 
 			$this->add = FALSE;
 
@@ -439,40 +437,48 @@ class Model {
 	}
 
 	public function __set($field, $value) {
+		if (empty(static::$table))
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
+		else
+			$table = static::$table;
+
 		if (is_array($value)) {
-			self::$_data[$field] = $value;
+			$this->_data[$table][$field] = $value;
 			$this->$field = $value;
 		} else {
-			self::$_data[$field] = addslashes($value);
+			$this->_data[$table][$field] = addslashes($value);
 			$this->$field = addslashes($value);
 		}
 	}
 
 	public function __get($field) {
+		if (empty(static::$table))
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
+		else
+			$table = static::$table;
 
-		if (isset(self::$_data[$field]))
-			return stripslashes(self::$_data[$field]);
+		if (isset($this->_data[$table][$field]))
+			return stripslashes($this->_data[$table][$field]);
 		else {
 			// Get for Update
 			if ($this->add != TRUE) {
 				$where = array();
-				while(list($f, $val)=each(self::$_id))
+				reset($this->_id);
+				while(list($f, $val)=each($this->_id))
 					array_push($where, array($f, '=', $val));
 				
-				$fields = self::fields();
-
 				$rows = self::find(array('where'=>$where), array(1));
-
+				$fields = self::fields();
 				foreach ($rows as $row) {
 					foreach($fields as $field_data) {
 						$field_name = $field_data->name;
 						// $this->$field_name = $row->$field_name;
-						self::$_data[$field_name] = $row->$field_name;	
+						$this->_data[$table][$field_name] = $row->$field_name;	
 					}
 				}
 				
-				if (isset(self::$_data[$field]))
-					return stripslashes(self::$_data[$field]);
+				if (isset($this->_data[$table][$field]))
+					return stripslashes($this->_data[$table][$field]);
 			}
 			// End Get for Update
 			return null;
