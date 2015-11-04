@@ -260,8 +260,10 @@ class Model {
 			}
 		}
 		
-		if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
-			$condition['callback'] = static::callback();
+		if (!isset($this)) {
+			if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
+				$condition['callback'] = static::callback();
+		}
 
 		$rows = self::$db->$table->find($condition, $limit, $order_by);
 		return $rows;
@@ -457,9 +459,12 @@ class Model {
 		else
 			$table = static::$table;
 
-		if (isset($this->_data[$table][$field]))
-			return stripslashes($this->_data[$table][$field]);
-		else {
+		if (isset($this->_data[$table][$field])) {
+			if (!is_object($this->_data[$table][$field]))
+				return stripslashes($this->_data[$table][$field]);
+			else
+				return $this->_data[$table][$field];
+		} else {
 			// Get for Update
 			if ($this->add != TRUE) {
 				$where = array();
@@ -468,18 +473,19 @@ class Model {
 					array_push($where, array($f, '=', $val));
 				
 				$rows = self::find(array('where'=>$where), array(1));
-				$fields = self::fields();
 				foreach ($rows as $row) {
-					foreach($fields as $field_data) {
-						$field_name = $field_data->name;
-						// $this->$field_name = $row->$field_name;
-						$this->_data[$table][$field_name] = $row->$field_name;	
-					}
+					
+					foreach($row as $field => $value)
+						$this->_data[$table][$field] = $value;
 				}
 				
-				if (isset($this->_data[$table][$field]))
-					return stripslashes($this->_data[$table][$field]);
-			}
+				if (isset($this->_data[$table][$field])) {
+					if (!is_object($this->_data[$table][$field]))
+						return stripslashes($this->_data[$table][$field]);
+					else
+						return $this->_data[$table][$field];
+				}
+			}	
 			// End Get for Update
 			return null;
 		}
