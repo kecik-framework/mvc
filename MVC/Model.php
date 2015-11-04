@@ -458,7 +458,7 @@ class Model {
 			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
 		else
 			$table = static::$table;
-
+		
 		if (isset($this->_data[$table][$field])) {
 			if (!is_object($this->_data[$table][$field]))
 				return stripslashes($this->_data[$table][$field]);
@@ -475,8 +475,8 @@ class Model {
 				$rows = self::find(array('where'=>$where), array(1));
 				foreach ($rows as $row) {
 					
-					foreach($row as $field => $value)
-						$this->_data[$table][$field] = $value;
+					foreach($row as $field_name => $value)
+						$this->_data[$table][$field_name] = $value;
 				}
 				
 				if (isset($this->_data[$table][$field])) {
