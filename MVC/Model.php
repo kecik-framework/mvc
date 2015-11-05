@@ -27,6 +27,10 @@ class Model {
 	protected static $table = '';
 	protected static $pk = null;
 	protected $_id;
+	protected $_modelId;
+	protected static $modelId = 0;
+	protected static $pid = array();
+	protected static $currentId = 0;
 	protected $_data = array();
 	protected $add = TRUE;
 	protected $is_instance = FALSE;
@@ -260,7 +264,7 @@ class Model {
 			}
 		}
 		
-		if (!isset($this)) {
+		if (!isset(self::$pid[self::$currentId])) {
 			if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
 				$condition['callback'] = static::callback();
 		}
@@ -367,6 +371,11 @@ class Model {
 			}
 		}
 
+		if (!isset(self::$pid[self::$currentId])) {
+			if (!isset($condition['callback']) && is_array(static::callback()) && count(static::callback()))
+				$condition['callback'] = static::callback();
+		}
+		
 		return self::$db->$table->raw_find($condition, $limit, $order_by);
     }
 
@@ -436,6 +445,11 @@ class Model {
 		}
 
 		$this->is_instance = TRUE;
+
+		self::$modelId++;
+		self::$currentId = self::$modelId;
+		self::$pid[self::$modelId] = $this->_id;
+		$this->_modelId = self::$modelId;
 	}
 
 	public function __set($field, $value) {
@@ -472,7 +486,8 @@ class Model {
 				while(list($f, $val)=each($this->_id))
 					array_push($where, array($f, '=', $val));
 				
-				$rows = self::find(array('where'=>$where), array(1));
+				self::$currentId = $this->_modelId;
+				$rows = $this->find(array('where'=>$where), array(1));
 				foreach ($rows as $row) {
 					
 					foreach($row as $field_name => $value)
