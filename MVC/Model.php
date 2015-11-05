@@ -48,11 +48,11 @@ class Model {
 		else
 			$table = static::$table;
 
-		if (count($this->_data[$table]) <= 0 ) {
+		if (isset($this->_data[$table]) || count($this->_data[$table]) <= 0 ) {
 			$post = $_POST;
 			while(list($field, $value) = each($post)) {
 				// Next if is Primary Keys
-				if (array_key_exists($field, $this->_id))
+				if (!empty($this->_id) || array_key_exists($field, $this->_id))
 					continue;
 				
 				$this->_data[$table][$field] = addslashes($value);
