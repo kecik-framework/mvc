@@ -48,12 +48,12 @@ class Model {
 		else
 			$table = static::$table;
 
-		if (isset($this->_data[$table]) || count($this->_data[$table]) <= 0 ) {
+		if (isset($this->_data[$table]) && count($this->_data[$table]) <= 0 ) {
 			$post = $_POST;
 			while(list($field, $value) = each($post)) {
 				// Next if is Primary Keys
-				if (!empty($this->_id) || array_key_exists($field, $this->_id))
-					continue;
+				// if (!empty($this->_id) && array_key_exists($field, $this->_id))
+					// continue;
 				
 				$this->_data[$table][$field] = addslashes($value);
 				$this->$field = $value;
@@ -450,6 +450,13 @@ class Model {
 		self::$currentId = self::$modelId;
 		self::$pid[self::$modelId] = $this->_id;
 		$this->_modelId = self::$modelId;
+
+		if (empty(static::$table))
+			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
+		else
+			$table = static::$table;
+
+		$this->_data[$table] = array();
 	}
 
 	public function __set($field, $value) {
