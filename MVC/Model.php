@@ -37,6 +37,14 @@ class Model {
 	protected $insert_id = null;
 	
 	/**
+	 * table solution for PHP version 5.4 for static::class problem
+	 * @return [type] [description]
+	 */
+	protected static function table() {
+		return __CLASS__;
+	}
+
+	/**
 	 * save
 	 * Fungsi untuk menambah atau mengupdate record (Insert/Update)
 	 * @return string SQL Query
@@ -44,7 +52,7 @@ class Model {
 	public function save() {
 
 		if (empty(static::$table))
-			$table = strtolower(substr(static::class, strpos(static::class, '\\')+1));
+			$table = strtolower(substr(static::table(), strpos(static::table(), '\\')+1));
 		else
 			$table = static::$table;
 
