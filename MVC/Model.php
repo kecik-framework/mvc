@@ -41,7 +41,7 @@ class Model {
 	 * @return [type] [description]
 	 */
 	protected static function table() {
-		return __CLASS__;
+		return get_called_class();
 	}
 
 	/**
